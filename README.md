@@ -36,3 +36,13 @@ En este curso abordaremos de forma general los siguientes aspectos del manejo de
 * Marla Rangel Cantero
 * Scarlett Escudero Osorio
 * Juan Díaz López
+
+* Edgar  A. Morales Ramírez
+
+ ## Enlaces
+
+[Pagina de Descarga de R](https://cran.r-project.org/)
+[Descarga de Rstudio](https://www.rstudio.com/products/rstudio/download/)
+[Curso Básico de R](https://r-basico.aprendr.org/)
+
+
