@@ -1,0 +1,136 @@
+---
+title: "Importar datos"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exploración del dataset General Society Survey (GSS)
+
+- importar datos
+- ordenar datos (manejo)
+- transformar datos; reducir o crear variables (manejo)
+- visualización (generar conocimiento - Hi)
+- modelado = herramientas matemáticas o computacionales (generar conocimiento - confirmar Hi)
+- comunicación 
+
+## Pre-requisitos 
+Los paquetes son la unidad fundamental de código reproducible de R. Incluyen funciones reutilizables, la documentación que describe cómo usarlas y datos de muestra.
+
+```{r}
+install.packages("tidyverse")
+library(tidyverse)
+tidyverse_update()
+```
+
+
+Esto es para trabajar con la base de datos en español
+```{r}
+install.packages("remotes")
+remotes::install_github("cienciadedatos/datos")
+install.packages(c("nycflights13", "gapminder", "Lahman"))
+```
+
+Cargar o leerl las librerías
+```{r}
+library(remotes)
+library(datos)
+library(nycflights13)
+library(gapminder)
+library(Lahman)
+```
+
+
+
+Para especificar de qué paquete es la función 
+```{r}
+dplyr::mutate()
+```
+
+
+```{r}
+as_tibble()
+
+tibble(
+  x = 1:5,
+  y = 1,
+  z = x^2 + y
+)
+```
+
+Cuando exploras un tibble puedes cambiar la manera de imprimir los datos 
+```{r}
+vuelos 
+
+datos::vuelos %>%
+  print(n = 10, width = Inf)
+
+datos::vuelos %>%
+  View()
+```
+
+Para realizar subsets de la base de datos: $ y [[
+```{r}
+vuelos$anio
+vuelos[[1]]
+
+#con el pipe 
+datos::vuelos %>%
+  .$anio
+
+datos::vuelos %>%
+  .[[1]]
+```
+
+## importar datos
+read_csv()
+read_csv2() # ;
+read_tsv()
+read_delim()
+read_fwf()
+
+
+readr
+tiible:: no convierte los caracteres a factores, no usan nombres de filas ni distorsionan los nombres de columnas.
+- “locale”, un objeto que especifica las opciones de análisis que difieren de un lugar a otro
+- decimal_mark `.`
+- parse_number() responde al segundo problema: ignora los caracteres no-numéricos antes y después del número (ingora el símbolo decimal)
+
+
+## Base de datos de la General Social Survey (universidad de Chicago)
+Estudia la complejidad social (americana) desde 1972 a fin de monitorear y explicar las tendencias y constantes en actitudes, conducta y atributos. 
+
+```{r}
+install.packages("foreign")
+library(foreign)
+
+# para saber el path
+file.choose()
+dataset_GSS <- read.spss("/Users/azaleareyesaguilar/Downloads/GSS2018.sav", to.data.frame=TRUE)
+
+View(dataset_GSS)
+fix(dataset_GSS)
+```
+
+```{r}
+tb_datos_GSS <- as_tibble(dataset_GSS)
+```
+
+Seleccionar variables de interés. Revisar GitHub 
+```{r}
+tb_datoshort_GSS <- select(tb_datos_GSS, YEAR, ID, WRKSTAT, HRS1, HRS2, MARITAL, PRESTG105PLUS, MARTYPE, DIVORCE, WIDOWED, COIND10, MAOCC10, SIBS, CHILDS, AGE, AGEKDBRN, EDUC, PAEDUC, MAEDUC, SPEDUC, COEDUC, DEGREE, PADEG, MADEG, SPDEG, SEX, RACE, BORN, PARBORN, GRANBORN, HOMPOP, EARNRS, INCOME, RINCOME, INCOM16, RINCOM16, PARTYID, VOTE12, VOTE16, PRES12, PRES16, IF12WHO, IF16WHO, POLVIEWS, SPKRAC, COLRAC, LIBRAC, SPKCOM, COLCOM, LIBCOM, SPKMIL, COLMIL, LIBMIL, SPKHOMO, COLHOMO, LIBHOMO, SPKMSLM, COLMSLM, LIBMIL, HAPPY, HAPMAR, HAPCOHAB, HEALTH, LIFE, FAIR, TRUST, SATFAM7, SATJOB, SATLIFE, SATSOC, FEHIRE, FEAR, FECHLD, FEJOBAFF, ABANY, PREMARSX, TEENSEX, XMARSEX, HOMOSEX)
+
+
+levels(tb_datos_GSS$RACE)
+
+```
+
+
+Eliminar las NA
+```{r}
+tb_datos_GSS %>% filter(is.na(tb_datos_GSS))
+```
+
+
