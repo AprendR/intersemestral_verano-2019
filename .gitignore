@@ -35,4 +35,8 @@ vignettes/*.pdf
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
 
+# Exclude Rstudio Project
 *.Rproj
+
+# Exclude notebook html render
+*.nb.html
