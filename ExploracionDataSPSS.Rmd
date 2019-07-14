@@ -1,57 +1,65 @@
 ---
 title: "Importar datos"
-output: github_document
+output: html_notebook
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+source("LecturaDataSPSS.R")
 ```
 
 ## Exploración del dataset General Society Survey (GSS)
 
-- importar datos
-- ordenar datos (manejo)
-- transformar datos; reducir o crear variables (manejo)
-- visualización (generar conocimiento - Hi)
-- modelado = herramientas matemáticas o computacionales (generar conocimiento - confirmar Hi)
-- comunicación 
+### Proceso
+
+- Importar datos
+- Ordenar datos (manejo)
+- Transformar datos, reducir o crear variables (manejo)
+- Visualización (generar conocimiento - Hi)
+- Modelado, herramientas matemáticas o computacionales (generar conocimiento - confirmar Hi)
+- Comunicación 
 
 ## Pre-requisitos 
+
 Los paquetes son la unidad fundamental de código reproducible de R. Incluyen funciones reutilizables, la documentación que describe cómo usarlas y datos de muestra.
 
-```{r}
+```{r eval=FALSE}
 install.packages("tidyverse")
 library(tidyverse)
 tidyverse_update()
 ```
 
+Esto permite trabajar con bases de datos en español:
 
-Esto es para trabajar con la base de datos en español
-```{r}
+```{r eval=FALSE}
 install.packages("remotes")
 remotes::install_github("cienciadedatos/datos")
 install.packages(c("nycflights13", "gapminder", "Lahman"))
 ```
 
-Cargar o leerl las librerías
-```{r}
-library(remotes)
+Cargar o leer las librerías
+
+```{r eval=FALSE}
 library(datos)
-library(nycflights13)
 library(gapminder)
 library(Lahman)
+library(nycflights13)
+library(remotes)
 ```
 
+Cuando una función se llama usando `::` la librería a la que pertenece no se carga en memoria sin
+embargo la función **si se ejecuta** . Esto nos sirve para disminuir la memoria que usamos así como
+para especificar de qué paquete es la función. 
 
-
-Para especificar de qué paquete es la función 
-```{r}
+```{r eval=FALSE}
 dplyr::mutate()
 ```
 
+Una estructura que puede usarse en sustitución de un **dataframe** es el **tibble**. Estos se pueden construir a partir de otros datasets (data.frames, data.tables, matrices, tablas) con la función `as.tibble()` ó se puede crear desde cero con la función `tibble()` definiendo una columna por 
+argumento.
 
 ```{r}
-as_tibble()
+mtcars.tibble <- as_tibble(mtcars)
 
 tibble(
   x = 1:5,
@@ -61,30 +69,48 @@ tibble(
 ```
 
 Cuando exploras un tibble puedes cambiar la manera de imprimir los datos 
+
 ```{r}
 vuelos 
+```
 
+```{r}
 datos::vuelos %>%
   print(n = 10, width = Inf)
+```
 
+```{r}
 datos::vuelos %>%
   View()
 ```
 
-Para realizar subsets de la base de datos: $ y [[
+Para realizar subsets de la base de datos se pueden usar los simbolos  `$` y `[[`
+
 ```{r}
 vuelos$anio
-vuelos[[1]]
+```
 
+```{r}
+vuelos[[1]]
+```
+
+Esto es compatible con el simbolo *pipe* `%>%` que redirecciona la salida a otra función
+
+```{r}
 #con el pipe 
 datos::vuelos %>%
   .$anio
+```
 
+En este caso el `.` es una representación del dataset redireccianos, una especie de alias que hace refencia a `vuelos`
+
+```{r}
 datos::vuelos %>%
   .[[1]]
 ```
 
-## importar datos
+## Importar datos
+
 read_csv()
 read_csv2() # ;
 read_tsv()
@@ -100,27 +126,54 @@ tiible:: no convierte los caracteres a factores, no usan nombres de filas ni dis
 
 
 ## Base de datos de la General Social Survey (universidad de Chicago)
+
 Estudia la complejidad social (americana) desde 1972 a fin de monitorear y explicar las tendencias y constantes en actitudes, conducta y atributos. 
 
-```{r}
+Primero necesitamos cargar las librerías necesarias para leer los archivos **SPSS**
+
+```{r eval = FALSE}
 install.packages("foreign")
 library(foreign)
+```
 
-# para saber el path
-file.choose()
-dataset_GSS <- read.spss("/Users/azaleareyesaguilar/Downloads/GSS2018.sav", to.data.frame=TRUE)
+Realizamos la lectura del archivo
 
+```{r}
+ruta.de.archivo <- file.choose()
+dataset_GSS <- read.spss(ruta.de.archivo, to.data.frame = TRUE)
+dataset_GSS
+```
+
+Podemos visualizar el dataset en un formato amigable
+
+```{r}
 View(dataset_GSS)
+```
+
+También es posible editar de forma manual parte de su contenido.
+
+```{r}
 fix(dataset_GSS)
 ```
+
 
 ```{r}
 tb_datos_GSS <- as_tibble(dataset_GSS)
 ```
 
 Seleccionar variables de interés. Revisar GitHub 
+
 ```{r}
-tb_datoshort_GSS <- select(tb_datos_GSS, YEAR, ID, WRKSTAT, HRS1, HRS2, MARITAL, PRESTG105PLUS, MARTYPE, DIVORCE, WIDOWED, COIND10, MAOCC10, SIBS, CHILDS, AGE, AGEKDBRN, EDUC, PAEDUC, MAEDUC, SPEDUC, COEDUC, DEGREE, PADEG, MADEG, SPDEG, SEX, RACE, BORN, PARBORN, GRANBORN, HOMPOP, EARNRS, INCOME, RINCOME, INCOM16, RINCOM16, PARTYID, VOTE12, VOTE16, PRES12, PRES16, IF12WHO, IF16WHO, POLVIEWS, SPKRAC, COLRAC, LIBRAC, SPKCOM, COLCOM, LIBCOM, SPKMIL, COLMIL, LIBMIL, SPKHOMO, COLHOMO, LIBHOMO, SPKMSLM, COLMSLM, LIBMIL, HAPPY, HAPMAR, HAPCOHAB, HEALTH, LIFE, FAIR, TRUST, SATFAM7, SATJOB, SATLIFE, SATSOC, FEHIRE, FEAR, FECHLD, FEJOBAFF, ABANY, PREMARSX, TEENSEX, XMARSEX, HOMOSEX)
+variables.seleccionadas <- c(
+  "YEAR", "ID", "WRKSTAT", "HRS1", "HRS2", "MARITAL", "PRESTG105PLUS", "MARTYPE", "DIVORCE", "WIDOWED", "COIND10",
+  "MAOCC10", "SIBS", "CHILDS", "AGE", "AGEKDBRN", "EDUC", "PAEDUC", "MAEDUC", "SPEDUC", "COEDUC", "DEGREE", "PADEG",
+  "MADEG", "SPDEG", "SEX", "RACE", "BORN", "PARBORN", "GRANBORN", "HOMPOP", "EARNRS", "INCOME", "RINCOME", "INCOM16",
+  "RINCOM16", "PARTYID", "VOTE12", "VOTE16", "PRES12", "PRES16", "IF12WHO", "IF16WHO", "POLVIEWS", "SPKRAC", "COLRAC", 
+  "LIBRAC", "SPKCOM", "COLCOM", "LIBCOM", "SPKMIL", "COLMIL", "LIBMIL", "SPKHOMO", "COLHOMO", "LIBHOMO", "SPKMSLM",
+  "COLMSLM", "LIBMIL", "HAPPY", "HAPMAR", "HAPCOHAB", "HEALTH", "LIFE", "FAIR", "TRUST", "SATFAM7", "SATJOB", "SATLIFE",
+  "SATSOC", "FEHIRE", "FEAR", "FECHLD", "FEJOBAFF", "ABANY", "PREMARSX", "TEENSEX", "XMARSEX", "HOMOSEX"
+)
+tb_datoshort_GSS <- select(tb_datos_GSS, variables.seleccionadas)
 
 
 levels(tb_datos_GSS$RACE)
