@@ -141,6 +141,11 @@ ruta.de.archivo <- file.choose()
 dataset_GSS <- read.spss(ruta.de.archivo, to.data.frame = TRUE)
 ```
 
+```{r include=FALSE}
+dataset_GSS <- ReadSPSSData()
+```
+
+
 ```{r}
 dataset_GSS
 ```

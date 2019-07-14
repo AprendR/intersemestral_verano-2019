@@ -6,3 +6,4 @@ install.packages("nycflights13")
 install.packages("remotes")
 install.packages("tidyverse")
 
+remotes::install_github("cienciadedatos/datos")
