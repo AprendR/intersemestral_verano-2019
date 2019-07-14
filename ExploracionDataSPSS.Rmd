@@ -44,7 +44,6 @@ library(datos)
 library(gapminder)
 library(Lahman)
 library(nycflights13)
-library(remotes)
 ```
 
 Cuando una función se llama usando `::` la librería a la que pertenece no se carga en memoria sin
@@ -97,7 +96,6 @@ vuelos[[1]]
 Esto es compatible con el simbolo *pipe* `%>%` que redirecciona la salida a otra función
 
 ```{r}
-#con el pipe 
 datos::vuelos %>%
   .$anio
 ```
@@ -131,16 +129,19 @@ Estudia la complejidad social (americana) desde 1972 a fin de monitorear y expli
 
 Primero necesitamos cargar las librerías necesarias para leer los archivos **SPSS**
 
-```{r eval = FALSE}
+```{r eval=FALSE}
 install.packages("foreign")
 library(foreign)
 ```
 
 Realizamos la lectura del archivo
 
-```{r}
+```{r eval=FALSE}
 ruta.de.archivo <- file.choose()
 dataset_GSS <- read.spss(ruta.de.archivo, to.data.frame = TRUE)
+```
+
+```{r}
 dataset_GSS
 ```
 
@@ -157,7 +158,7 @@ fix(dataset_GSS)
 ```
 
 
-```{r}
+```{r eval=FALSE}
 tb_datos_GSS <- as_tibble(dataset_GSS)
 ```
 
@@ -174,10 +175,7 @@ variables.seleccionadas <- c(
   "SATSOC", "FEHIRE", "FEAR", "FECHLD", "FEJOBAFF", "ABANY", "PREMARSX", "TEENSEX", "XMARSEX", "HOMOSEX"
 )
 tb_datoshort_GSS <- select(tb_datos_GSS, variables.seleccionadas)
-
-
 levels(tb_datos_GSS$RACE)
-
 ```
 
 
