@@ -21,7 +21,7 @@ source("LecturaDataSPSS.R")
 
 ## Pre-requisitos 
 
-Los paquetes son la unidad fundamental de código reproducible de R. Incluyen funciones reutilizables, la documentación que describe cómo usarlas y datos de muestra.
+Los paquetes son la unidad fundamental del código reproducible de R. Incluyen funciones reutilizables, la documentación que describe cómo usarlas y datos de muestra.
 
 ```{r eval=FALSE}
 install.packages("tidyverse")
@@ -46,20 +46,20 @@ library(Lahman)
 library(nycflights13)
 ```
 
-Cuando una función se llama usando `::` la librería a la que pertenece no se carga en memoria sin
-embargo la función **si se ejecuta** . Esto nos sirve para disminuir la memoria que usamos así como
-para especificar de qué paquete es la función. 
+Cuando una función se llama usando `::` la librería a la que pertenece no se carga en memoria sin embargo la función **si se ejecuta** . Esto nos sirve para disminuir la memoria que usamos así como para especificar de qué paquete es la función. 
 
-```{r eval=FALSE}
-dplyr::mutate()
-```
+e.g. `dplyr::mutate()`
+
 
 Una estructura que puede usarse en sustitución de un **dataframe** es el **tibble**. Estos se pueden construir a partir de otros datasets (data.frames, data.tables, matrices, tablas) con la función `as.tibble()` ó se puede crear desde cero con la función `tibble()` definiendo una columna por 
 argumento.
 
 ```{r}
 mtcars.tibble <- as_tibble(mtcars)
+```
 
+Otra manera desde vectores
+```{r}
 tibble(
   x = 1:5,
   y = 1,
@@ -73,11 +73,13 @@ Cuando exploras un tibble puedes cambiar la manera de imprimir los datos
 vuelos 
 ```
 
+Para modificar el modo de imprimir un tibble, ahora con todas las variables
 ```{r}
 datos::vuelos %>%
   print(n = 10, width = Inf)
 ```
 
+Otra manera de visualizarlos 
 ```{r}
 datos::vuelos %>%
   View()
@@ -100,7 +102,7 @@ datos::vuelos %>%
   .$anio
 ```
 
-En este caso el `.` es una representación del dataset redireccianos, una especie de alias que hace refencia a `vuelos`
+En este caso el `.` es una representación del dataset redireccionándo, una especie de alias que hace refencia a `vuelos`
 
 ```{r}
 datos::vuelos %>%
@@ -141,14 +143,66 @@ ruta.de.archivo <- file.choose()
 dataset_GSS <- read.spss(ruta.de.archivo, to.data.frame = TRUE)
 ```
 
+Después de leer los datos los transformamos a una estructura tibble
+```{r eval=FALSE}
+tb_datos_GSS <- as_tibble(dataset_GSS)
+```
+
+
+# FUNCIONES 
+
+O bien, usando una función que incluya los pasos desde la obtención de la ruta del archivo hasta la transformación de los datos a tibble:
+
 ```{r include=FALSE}
 dataset_GSS <- ReadSPSSData()
 ```
 
-
 ```{r}
 dataset_GSS
 ```
+
+Descripción, uso y argumentos. 
+```{r}
+help(mean)
+?mean
+args(mean)
+```
+
+Ejercicio: Qué computa y qué argumentos permite la función sd()?
+
+## Escribe tus propias funciones 
+
+mi_funcion <- function(arg1, arg2) {
+  "cuerpo_de_computo"
+}
+
+
+```{r}
+hola <- function() {
+  print("Hola Azalea! Que tengas muy bonito día")
+}
+```
+
+```{r}
+suma_absoluta <- function(x, y) {
+  abs(x) + abs(y)
+}
+```
+
+```{r}
+retroalimentacion <- function(calificacion) {
+  if (calificacion == 10) {
+  print ("Muchas felicidades, eres excelente alumno! Espero sigas con muchas ganas y éxito")
+  } else if(between(calificacion, 8, 9)) {
+    print("Muy buen trabajo, espero que sigas mejorando, vas muy bien")
+  } else if(between(calificacion, 6, 7)) {
+    print("Puedes mejorar tu trabajo, aunque has acreditado la materia necesitas seguir preparándote")
+  } else {
+  print("Trata de mejorar tu disciplina y desempeño!")
+  }
+}
+```
+
 
 Podemos visualizar el dataset en un formato amigable
 
@@ -163,11 +217,13 @@ fix(dataset_GSS)
 ```
 
 
-```{r eval=FALSE}
-tb_datos_GSS <- as_tibble(dataset_GSS)
-```
+### Variables 
 
-Seleccionar variables de interés. Revisar GitHub 
+x : variables explicativas ; predictoras 
+y : variable dependiente
+
+
+Seleccionar variables de interés. Revisar GitHub. Para agilizar la dinámica en el curso se seleccionaros las variables agrupandolas en conjuntos de datos **dataset**.
 
 ```{r}
 variables.seleccionadas <- c(
@@ -176,17 +232,149 @@ variables.seleccionadas <- c(
   "MADEG", "SPDEG", "SEX", "RACE", "BORN", "PARBORN", "GRANBORN", "HOMPOP", "EARNRS", "INCOME", "RINCOME", "INCOM16",
   "RINCOM16", "PARTYID", "VOTE12", "VOTE16", "PRES12", "PRES16", "IF12WHO", "IF16WHO", "POLVIEWS", "SPKRAC", "COLRAC", 
   "LIBRAC", "SPKCOM", "COLCOM", "LIBCOM", "SPKMIL", "COLMIL", "LIBMIL", "SPKHOMO", "COLHOMO", "LIBHOMO", "SPKMSLM",
-  "COLMSLM", "LIBMIL", "HAPPY", "HAPMAR", "HAPCOHAB", "HEALTH", "LIFE", "FAIR", "TRUST", "SATFAM7", "SATJOB", "SATLIFE",
+  "COLMSLM", "LIBMSLM", "HAPPY", "HAPMAR", "HAPCOHAB", "HEALTH", "LIFE", "FAIR", "TRUST", "SATFAM7", "SATJOB", "SATLIFE",
   "SATSOC", "FEHIRE", "FEAR", "FECHLD", "FEJOBAFF", "ABANY", "PREMARSX", "TEENSEX", "XMARSEX", "HOMOSEX"
 )
-tb_datoshort_GSS <- select(tb_datos_GSS, variables.seleccionadas)
-levels(tb_datos_GSS$RACE)
+```
+
+```{r}
+datoshort_GSS <- select(dataset_GSS, variables.seleccionadas)
+```
+
+# Análisis exloratorio
+- ver los datos
+- crear visualizaciones de los datos
+- crear resumenes o síntesis de los datos 
+
+Vamos a explorar qué tipo de dateset tenemos, cuántas observaciones y variables tenemos; qué tipo de datos tenemos para cada variable.
+```{r}
+class(datoshort_GSS)
+dim(datoshort_GSS)
+str(datoshort_GSS)
+
+glimpse(datoshort_GSS)
+
+levels(datoshort_GSS$SEX)
+levels(datoshort_GSS$RACE)
+
+plot(datoshort_GSS$RACE, datoshort_GSS$SEX)
+plot(datoshort_GSS$RACE, datoshort_GSS$MARITAL)
+
+# revisemos el acomodo de otra forma
+plot(datoshort_GSS$MARITAL, datoshort_GSS$RACE)
+plot(datoshort_GSS$MARITAL, datoshort_GSS$SEX)
+
+plot(datoshort_GSS$RINCOM16, datoshort_GSS$RACE)
+levels(datoshort_GSS$RINCOM16)
+
+plot(datoshort_GSS$RACE, datoshort_GSS$BORN)
+
+plot(datoshort_GSS$RACE, datoshort_GSS$PARBORN)
+levels((datoshort_GSS$PARBORN))
+summary(datoshort_GSS$PARBORN)
+
+plot(datoshort_GSS$RACE, datoshort_GSS$HAPPY)
+plot(datoshort_GSS$SEX, datoshort_GSS$HAPPY)
+
+
+plot(datoshort_GSS$PARTYID, datoshort_GSS$RACE)
+```
+
+Explora las variables con levels and summary
+VOTE12
+PRES12
+VOTE16
+PRES16
+
+```{r}
+plot(datoshort_GSS$PRES12, datoshort_GSS$RACE)
+```
+
+Si no votaron:
+IFWHO12
+IFWHO16
+
+### Ejercicio
+Revisar si la preferencia política (datoshort_GSS$PARTYID) determina por quien votaron o votarían (persona - partido)
+
+
+# Con Tidyverse::ggplot2
+Histograma, representación gráfica de una variable en forma de barras, donde la superficie de cada barra es proporcional a la frecuencia de los valores representados.
+
+```{r}
+ggplot(datoshort_GSS, aes(x = PRES16)) +
+  geom_bar() +
+  labs(x = "Presidente", y = "Frecuencia")
+```
+
+variable: “IAP” which means inapplicable. Entonces podemos hacer un filtro de los que votaron con Trump and Clinton y después "ver" si las tres diferentes razas muestran preferencia diferencial por los dos candidatos.
+```{r}
+datos_ClinTrump <- datoshort_GSS %>% filter(PRES16 == "Clinton" | PRES16 == "Trump")
+
+ggplot(datos_ClinTrump, aes(x = PRES16)) + 
+  geom_bar(aes(fill = RACE), position = "dodge") + 
+  labs(x = "Presidente", y = "Frecuencia")
+``` 
+
+Ahora respecto a su percepción de sociedad 
+```{r}
+ggplot(datos_ClinTrump, aes(x = PRES16)) + 
+  geom_bar(aes(fill = SATSOC), position = "dodge") + 
+  labs(x = "Presidente", y = "Frecuencia")
+```
+No parece haber diferencia entre los que votaron por C que por T
+
+
+### Crear una variable 
+Vamos a crear una nueva variable. SATSOC está en una escala de palabras (caracteres), vamos a pasarla a una escala númerica. Primero exploremos la variable y determinemos cómo hacer esa transformación. 
+```{r}
+levels(datoshort_GSS$SATSOC)
+
+
+datoshort_GSS %>% 
+  drop_na(WRKSTAT) %>% 
+  ggplot(aes(x = WRKSTAT)) + 
+  geom_bar(aes(fill = SATSOC), position = "dodge") + 
+  labs(x = "Ocupacion", y = "Frecuencia")
+```
+
+Vamos a hacer una función para esto. 
+```{r}
+escalaNumerica <- function(x) {
+  results.vector <- c("Excellent" = 5, "Very good" = 4, "Good" = 3, "Fair" = 2, "Poor" = 1)
+  return(unname(results.vector[x]))
+}
+```
+
+Ahora sí construimos una nueva variable de SATSOC numérica
+```{r}
+datoshort_GSS <- datoshort_GSS %>%
+  mutate(SATSOC_N = escalaNumerica(SATSOC))
+
+# exploramos los datos 
+datoshort_GSS$SATSOC_N
 ```
 
 
-Eliminar las NA
+### Arreglar los datos
+vamos a arreglar los datos 
 ```{r}
-tb_datos_GSS %>% filter(is.na(tb_datos_GSS))
+arrange(datoshort_GSS, desc(SATSOC_N))
+```
+
+Vamos a obtener estadísticos descriptivos 
+```{r}
+datoshort_GSS %>%
+  summarize(mean_SATSOC = mean(SATSOC_N, na.rm = T),
+            median_SATSOC = median(SATSOC_N, na.rm = T),
+            sd_SATSOC = sd(SATSOC_N, na.rm = T))
+```
+
+Vamos a visualizar esta nueva variable 
+```{r}
+ggplot(datoshort_GSS, aes(x = SATSOC_N)) +
+  geom_histogram() +
+  labs(x = "Satisfacción social", y = "Frecuencia")
 ```
 
 
