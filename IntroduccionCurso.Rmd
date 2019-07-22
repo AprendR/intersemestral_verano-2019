@@ -11,9 +11,9 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Problema
 
-En nuestra labor como psicólogos, ya sea en investigación o en mbitos laborales,  será probable que necesitemos realizar el análisis estadístico de algún tipo de dato.
+En nuestra labor como psicólogos, ya sea en investigación o en ámbitos laborales,  será probable que necesitemos realizar el análisis estadístico de algún tipo de datos.
 
-Dentro de la carrera se imparten varios cursos sobre estadástica, para su aplicación requerimos de softwares especializados.
+Dentro de la carrera se imparten varios cursos sobre estadística, para su aplicación requerimos de softwares especializados.
 
 ![](imagenes/logos-estad.png)
 
@@ -29,9 +29,10 @@ La lógica de la programación es la organización coherente de las instruccione
 
 La lógica es la técnica utilizada para desarrollar instrucciones en una secuencia para lograr determinado objetivo.
 
-Es la organizacién y planificacién de instrucciones en un algoritmo, con el objetivo de tornar visible la implementacién de un programa o software.
+Es la organización y planificación de instrucciones en un algoritmo, con el objetivo de tornar visible la implementación de un programa o software.
 
 ## Algoritmo
+
 El algoritmo es la propia secuencia de instrucciones para la ejecución de una tarea.
 La información en un algoritmo tiene que ser clara y detallada, tener una secuencia correcta y bien definida de las acciones
 
@@ -59,10 +60,11 @@ Hay diversas formas de representar un algoritmo, como formas gráficas, flujogra
 
 
 ## Intefaz de R Studio
+
 ![](imagenes/interfaz.png)
 
 
-##Objetos
+## Objetos
 
 ¿Qué es un objeto? Solo un nombre que puede utilizar para recuperar los datos almacenados. Por ejemplo, puede guardar datos en un objeto como a o b. 
 
@@ -73,16 +75,18 @@ a <- 5
 b <- 6
 ```
 
-##Los objetos aparecerán en el environment
+## Objetos en el environment
+
 ![](imagenes/ejemplo-j-1.png)
 
-##Relgas para los objetos 
+## Reglas para los objetos 
 
 Puede nombrar un objeto en R casi cualquier cosa que desee, pero hay algunas reglas. Primero, un nombre no puede comenzar con un número. Segundo, un nombre no puede usar algunos símbolos especiales, como ^,!, $, @, +, -, /, o *:
 
 ![](imagenes/ejemplo-j-2.png)
 
-##Relgas para los objetos 
+## Reglas para los objetos 
+
 R sobrescribirá cualquier información previa almacenada en un objeto sin pedirle permiso. Por lo tanto, es una buena idea no usar nombres que ya están en uso:
 
 ```{r echo=TRUE}
@@ -98,15 +102,15 @@ mi_numero
 
 *Operaciones Aritméticas*
 
-1.( + Adicción)
+1. ( + Adicción)
 
-2.( - Sustracción)
+2. ( - Sustracción)
 
-3.( * Multiplicación)
+3. ( * Multiplicación)
 
-4.( / División)
+4. ( / División)
 
-5.( ^ Exponente )
+5. ( ^ Exponente )
 
 
 ```{r echo=TRUE}
