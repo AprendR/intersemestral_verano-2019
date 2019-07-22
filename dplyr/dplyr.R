@@ -156,7 +156,7 @@ datos %>%
   select(edad = AGE, sexo = SEX, infiel = EVSTRAY, peso = WEIGHT, estatura = HEIGHT))
 
 
-# mutate ------------------------------------------------------------------
+# mutate() ------------------------------------------------------------------
 
 
 # Peso en kg
@@ -175,11 +175,11 @@ mini_tbl %>%
          imc = peso_kg / estatura_m^2) 
 
 # Dejamos peso_kg y estatura_m
-mini_tbl <- mini_tbl %>% 
+(mini_tbl <- mini_tbl %>% 
   mutate(peso_kg = peso * 0.453592,
          estatura_m = estatura * 0.0254,
          imc = peso_kg / estatura_m ^ 2) %>% 
-  select(-(peso:estatura))
+  select(-(peso:estatura)))
 
 
 # filter() ----------------------------------------------------------------
@@ -223,5 +223,48 @@ mini_tbl %>%
   filter(!is.na(imc))
 
 
+# arrange() ---------------------------------------------------------------
+
+mini_tbl %>% 
+  arrange(imc)
 
 
+mini_tbl %>% 
+  arrange(desc(imc))
+
+
+
+# summarise() -------------------------------------------------------------
+
+mini_tbl %>% 
+  summarise(m_edad = mean(edad, na.rm = T),
+            m_peso = mean(peso_kg, na.rm = T),
+            m_esta = mean(estatura_m, na.rm = T),
+            m_imc = mean(imc, na.rm = T))
+
+mini_tbl %>% 
+  group_by(sexo) %>% 
+  summarise(m_edad = mean(edad, na.rm = T),
+            m_peso = mean(peso_kg, na.rm = T),
+            m_esta = mean(estatura_m, na.rm = T),
+            m_imc = mean(imc, na.rm = T))
+
+
+
+# Combinar múltiples operaciones ------------------------------------------
+
+
+mini_tbl %>% 
+  filter(edad <= 45, 
+         infiel %in% c("YES", "NO")) %>% 
+  mutate(infiel = fct_relevel(infiel, "NO")) %>% 
+  ggplot(aes(x = estatura_m, y = peso_kg)) +
+  geom_point(aes(size = edad, col = sexo), alpha = 0.3) +
+  geom_smooth(method = "lm", alpha = 0.2) +
+  facet_wrap(~infiel) +
+  labs(x = "Estatura (m)",
+       y = "Peso (kg)",
+       col = "Sexo",
+       size = "Edad") +
+  theme_bw()
+  
