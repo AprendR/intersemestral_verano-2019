@@ -255,12 +255,12 @@ mini_tbl %>%
 
 
 mini_tbl %>% 
-  filter(edad <= 45, 
-         infiel %in% c("YES", "NO")) %>% 
+  filter(infiel %in% c("YES", "NO")) %>% 
   mutate(infiel = fct_relevel(infiel, "NO")) %>% 
   ggplot(aes(x = estatura_m, y = peso_kg)) +
-  geom_point(aes(size = edad, col = sexo), alpha = 0.3) +
+  geom_point(aes(size = edad, col = sexo), alpha = 0.2) +
   geom_smooth(method = "lm", alpha = 0.2) +
+  geom_rug(aes(col = sexo), alpha = 0.5) +
   facet_wrap(~infiel) +
   labs(x = "Estatura (m)",
        y = "Peso (kg)",
