@@ -1,17 +1,18 @@
 
 
 # dplyr y tidyverse -------------------------------------------------------
+#+ setup, message = FALSE, warning = FALSE, error = FALSE
 
 
 # Paquetes ----------------------------------------------------------------
 
-
-pacman::p_load(tidyverse, foreign)
+library(tidyverse)
+library(foreign)
 
 
 # Descargar datos ---------------------------------------------------------
 
-datos <- read.spss("~/Documents/R/github_Said/intersemestral_verano-2019/Datos/GSS2018.sav", 
+datos <- read.spss("Datos/GSS2018.sav", 
                    to.data.frame = TRUE,
                    max.value.labels = 5) 
 
