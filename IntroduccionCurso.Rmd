@@ -120,6 +120,7 @@ mi_numero
 ## Operaciones básicas en R
 
 *Operaciones lógicas*
+
 - != No Igual
 
 - == Igual
