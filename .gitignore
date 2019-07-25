@@ -40,3 +40,4 @@ rsconnect/
 
 # Exclude notebook html render
 *.nb.html
+.Rproj.user
