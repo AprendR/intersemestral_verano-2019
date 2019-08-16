@@ -1,0 +1,678 @@
+---
+title: "R intersemestral"
+output:
+  slidy_presentation: default
+  chunk_output_type: console
+  editor_options: null
+  beamer_presentation: default
+  ioslides_presentation: default
+---
+# Sesión 4
+
+## Estadística descriptiva (1h)  
+
+Los datos son generalmente imperfecto en el sentido que aún cuando posean información útil, no nos cuentan una historia completa. Es necesario contrar con metodos que nos permitan extraer informacion a partir de los datos observados para comprender mejor las situaciones que esos mismo datos respresenta. 
+
+Le estadistica descriptiva resume e interpretan algunas de las propiedades de un conjunto de datos. Los metodos de la estadística descriptiva ayudan a apresentar los datos de modo tal que sobresalga su estrcutura. El modo de describir los datos es resumirlos en uno o dos numeros que pretenden caracterizar el conjunto con la menor distorsión o pérdida de información posible. 
+
+# Primeras funciones R descritiva
+En R Algunas de estas funciones que nos permiten obtener informacion de los datos son:
+
+```{r, eval=FALSE}
+str ( ) 
+dim ( )
+length ( )
+min ( ) 
+max ( ) 
+mean ( ) 
+median ( ) 
+```
+
+Ejemplo
+```{r}
+str(cars) 
+min(cars)
+max(cars)
+```
+
+# Moda
+En ocasiones se busca saber cúal es el dato más frecuente en una variable. ¿Como hacerlo?
+```{r, eval=FALSE}
+moda_datos <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+
+moda_datos()
+```
+
+Pero podemos obtener la moda utilizando funciones de una librería .
+```{r, eval=FALSE}
+install.packages("DescTools")
+library(DescTools)
+Mode(datos, na.rm = FALSE)
+```
+
+```{r, eval=FALSE}
+install.packages("pracma")
+library(pracma)
+Mode(datos)
+```
+
+```{r, eval=FALSE}
+install.packages('prettyR', dependencies = T)
+library("prettyR")
+Mode(datos)
+```
+
+```{r, eval=FALSE}
+moda_datos(cars$speed)
+Mode(cars$speed)
+```
+
+# 
+Ahora, lo que queremos saber es: ¿Cómo se comportan esas variables?. Por ejemplo, saber cual es el rango numerico, los quantiles, el IQR, etc. 
+
+Para ello vamos a utlizar las siguientes funciones.
+```{r, eval=FALSE}
+range() # obtenemos rango 
+quantile() # obtenemos los cuantiles 
+IQR()  # rango intercuartil (diferencia entre el 1er y 3er cuartil)
+sort() # ordenamos datos 
+table() #tabla de frecuencias absolutas
+prop.table() # frecuencias relativa, no opera directamente sobre la variable, sino sobre la tabla de frecuencias absolutas creada con table().
+```
+
+Por ejemplo 
+```{r}
+sort(cars$speed) 
+range(cars$speed)
+quantile(cars$speed)
+quantile(cars$speed, 0.75)
+quantile(cars$speed, prob = seq(0, 1, length = 11)) 
+IQR(cars$speed)  
+table(cars$speed)
+prop.table(cars$speed)
+```
+
+# Medidas de dispersión
+
+* Desviación estándar: la raíz cuadrada de los cuadrados de las desviaciones de los valores de la variable respecto a su media.
+* Varianza: cuadrado de la desviación estándar.
+* Error estándar de la media: desviacion estándar / raíz cuadrada (n)
+
+```{r, eval=FALSE}
+sd()
+var()
+mean()
+
+#install.packages("plotrix")
+library(plotrix)
+std.error() 
+```
+
+Por ejemplo
+```{r}
+sd(cars$speed)
+var(cars$speed)
+
+library(plotrix)
+std.error(cars$speed, na.rm = TRUE) 
+```
+
+# kurtosis & skewness
+
+Sabemos que:
+
+* La asimetría nos permite estudiar la deformación horizontal de los valores de la variable respecto al valor central de la media: 
+    + Positiva (a la derecha).
+    + Negativa (a la izquierda).
+
+* La curtosis nos permite estudiar lo aguda que es la curva (concentración a la linea central) de los datos: 
+    + Mesocúrtica (normal).
+    + Leptocúrtica (existe una gran concentración).
+    + Platicúrtica (existe una menor distribución).
+    
+```{r, echo=FALSE}
+#install.packages("e1071")
+library(e1071)
+```
+
+    
+```{r, eval=FALSE}
+install.packages("e1071")
+library(e1071)
+kurtosis()
+skewness()
+```
+
+Por ejemplo.
+```{r}
+kurtosis(cars$speed)
+skewness(cars$speed)
+```
+
+# summary, describe & stat.desc
+
+## summary 
+
+Todas las funciones antes vistas las hemos analizado una por una, sin embargo, existen funciones para desplegar varios datos descriptivos, las cuales forman parte de librerías específicas como **Base** o **psych**. 
+
+La primera función que nos permite obtener de manera general información sobre nuestras variables es *summary*. Esta función es la mas usada para generar datos descriptivos. Esta funcion utiliza un metodo que depende de la clase de la variable. 
+
+```{r}
+summary(cars) 
+```
+
+## describe
+
+Sin embargo, tambien podemos obtener información de nuestros datos utilizando la función *describe*. Esta función es de las mas usadas para el análisis de elementos en psicometría clásica.
+
+```{r, echo=FALSE}
+#install.packages("psych")
+library(psych)
+```
+
+```{r, eval=FALSE}
+install.packages("psych")
+library(psych)
+```
+
+Por ejemplo
+```{r}
+describe(cars)
+describeData(cars, head=4, tail=4) 
+describeFast(cars) 
+```
+
+## stat.desc 
+
+Crea una tabla que proporciona estadística descritiva de un *data frame* de una sola variable o de múltiples variables. 
+
+```{r, echo=FALSE}
+library(pastecs) 
+```
+
+```{r, eval=FALSE}
+install.packages("pastecs")
+library(pastecs) 
+stat.desc()
+```
+
+Por ejemplo
+```{r}
+stat.desc(cars, norm = TRUE, p = 0.95)
+```
+
+Con esta información ya podemos darnos una idea general de como esta integrado nuestro dataset. 
+
+# Gráficos descriptivos
+
+## Boxplot, hist, stem, pairs, plot
+
+Como todos sabemos, las gráficas de cajas y brazos (box and whisker plot) o boxplot son muy útiles para mostrar los datos de manera descriptiva y darnos una idea de como estan integrados nuestro dataset.
+
+Lo que nos muestra nuestro boxplot es lo siguiente:
+  * Q1 y Q3 = rango intercuartil que forma la caja
+  * la mediana es la medida de tendencia central dentro de la caja
+  * bigotes o brazo inferior: Q1 - 1.5 * IQR (min)
+  * bigotes o brazo superior: Q3 + 1.5 * IQR (max)
+  * lo que está más alla del max y min, son conocidos como datos atipicos o "outliers" 
+
+### Boxplot
+```{r}
+boxplot(cars)
+boxplot(cars$speed)
+boxplot(cars$speed, horizontal = T)
+```
+
+### Histograma 
+
+```{r}
+hist(cars$speed)
+hist(cars$speed, breaks = 10)
+hist(cars$speed, freq = FALSE)
+hist(cars$speed, breaks = 10, freq = FALSE)
+```
+
+### Tallos y hojas 
+```{r}
+stem(cars$speed)
+stem(cars$speed, scale = 4)
+stem(cars$speed, scale = 4, width = 100)
+```
+
+### Pairs 
+```{r}
+pairs(cars)
+```
+
+### Plot 
+```{r}
+plot(cars$speed, cars$dist)
+```
+
+**########################################################**
+
+# Contraste de Hipótesis (1h)
+
+Para este caso contrastaremos la hipótesis nula $H_{0}: \mu=\mu_0$ contra la alternativa $H_{1}: \mu\neq\mu_0$.
+
+$$
+\left\{
+\begin{array}{ll}
+H_{0}: &  \mu=\mu_0\\
+H_{1}: & \mu\neq\mu_0
+\end{array}
+\right.
+$$
+
+Pero lo primero que debemos de saber, es cómo es el comportamiento de nuestros datos para decidir que tipo de analisis estadistico vamos a utilizar. 
+
+# Análisis para determinar la normalidad de nuestros datos
+
+Para saber si una variable tiene cierto tipo de distribución (e.g. normal), se puede usar la prueba de *Shapiro-Wilk*. Para este caso vamos a utilizar el dataset **mtcars (Motor Trend Car Road Test)**, para ir ejemplificando.
+
+Primero
+```{r}
+str(mtcars)
+```
+
+# Q-Q plot & Shapiro-Wilk test
+
+Ahora, vamos a realizar un Q-Q plot graficando los cuantiles de nuestra variable de interes con los cuantiles de una distribución normal. 
+```{r}
+qqnorm(mtcars$mpg) # nube de puntos 
+qqline(mtcars$mpg) # recta 
+```
+
+Ahora que graficamente hemos visto como es el comportamiento de nuestra variable realizamos una prueba de normalidad  con la función **shapiro.test( )** considerando lo siguiente:
+
+* hipótesis nula $H_{0}: \mu=\mu_0$ = la distribución es normal
+* hipótesis alternativa $H_{1}: \mu\neq\mu_0$ = la distribución NO es normal.
+
+```{r}
+shapiro.test(mtcars$mpg)
+```
+*Con un p-value = 0.1229 mayor de 0.05 no podemos rechazar la hipótesis nula (hipótesis de normalidad). Por lo tanto, podemos concluir que nuestros datos cumplen el supuesto de normalidad.*
+
+Contraste de hipotesis: se asume la normalidad de nuestros datos por lo que podemos aplicar nuestro contraste:
+
+* hipótesis nula $H_{0}: \mu=\mu_20$
+* hipótesis alternativa $H_{1}:\mu\neq\mu_20$
+
+para ello aplicamos la funcion **t.test**
+
+# T test
+
+La prueba t-test suele usarse para una o mas variables. 
+
+En teoría la distribución t nos permite identificar un intervalo donde se encuentra la media verdadera de una población con una distribución normal a partir de un muestreo aleatorio. Dado que podemos determinar un rango en el cual se encuentra la medía verdadera de la población a la que pertenece la muestra, Podemos entonces comparar si dos grupos de datos pertenecen o no a una misma población.
+
+Uso del *t.test*
+
+```{r}
+t.test(mtcars$mpg, mu = 20, alternative = "two.sided", conf.level = 0.99) # contraste bilateral
+
+```
+
+*Con un p-value = 0.9328 mayor de 0.05 no podemos rechazar la hipótesis nula. Podemos concluir que la media de los valores de mpg es de 20, con un intervalo de confianza de 17.16706 23.01419 que incluye dicho valor.*
+
+# Contraste de hipotesis para dos muestras
+
+Ahora vamos al uso clasico de **t.test**, compara dos muestras.
+Rapidamente comparemos dos distribuciones normales.
+
+Vamos a segmentar mtcars
+```{r}
+Mpg_shaped <- mtcars$mpg[mtcars$vs == 0]
+Mpg_straight <- mtcars$mpg[mtcars$vs == 1]
+
+#mtcars_subset <- data.frame(Shaped = Mpg_shaped, Straight = Mpg_straight)
+```
+
+Analicemos su normalidad 
+
+```{r}
+shapiro.test(Mpg_shaped)
+shapiro.test(Mpg_straight)
+```
+*Con un p-value mayor de 0.05 para ambas muestras no podemos rechazar la hipótesis nula (hipótesis de normalidad). Por lo tanto, podemos concluir que ambas muestras cumplen el supuesto de normalidad.*
+
+
+## Análisis de varianza
+
+Si tienes dos o más variables y deseamos saber si tienen la misma varianza o son diferentes *(homocedasticidad)*, puedes utilizar varias pruebas para saber si aceptas o rechazas la *hipótesis nula (las varianzas son iguales)* o aceptar la *hipotesis alternativa (las varianzas son differentes)*.
+
+Algunas pruebas son:
+
+* Prueba de Bartlett
+* Prueba de Levene
+* Prueba de Hartley
+* Prueba de Chochran
+* Prueba de Layard
+        
+```{r, eval=FALSE}
+#install.packages("car")
+library(car)
+
+var.test()
+bartlett.test()
+leveneTest()
+```
+
+La funcion **var.test** hace un análisis de comparación de dos muestras.
+
+Por ejemplo
+```{r}
+var.test(Mpg_shaped, Mpg_straight)
+```
+
+*Interpretación: Con un p-value =  0.1997, mayor de 0.05, no podemos rechazar la hipótesis nula. Por lo tanto suponemos homogeneidad de varianzas.*
+
+#
+**Contraste de hipotesis**: Por lo tanto suponemos normalidad y homocedasticidad y ahora podemos realizar el contraste. 
+
+
+```{r}
+t.test(Mpg_shaped, Mpg_straight, # dos muestras 
+        alternative = "two.sided", # contraste bilateral 
+        paired = FALSE, # muestras independientes
+        var.equal = TRUE ) # igualdad de varianzas
+```
+
+*Con un p-value = 3.416e-05 menor de 0.05 podemos rechazar la hipótesis nula de igualdad de medias. Esto es, hay diferencias significativas entre las medias. Podemos concluir que la media de mpg de los autos con un motor shaped es diferente a la media de mpg de los autos con un motor straight.*
+
+
+# ¿Datos pareadas?
+
+En ocasiones las muestras no son independientes y pueden ser mediciones distintas de una misma muestra, muy común en analisis con medidas repetidas y analisis longitudinales.
+
+Suponiendo un escenario donde tenemos datos pareados. En este caso una de nuestras variables tuvo in incremente posterior a una modificación del motor.  
+
+```{r}
+Mpg_shaped_2nd <- Mpg_shaped * 0.2
+```
+
+
+```{r, eval=FALSE}
+t.test(Mpg_shaped, Mpg_shaped_2nd, paired = TRUE, alternative = "greater", conf.level = 0.99)
+```
+
+*Con un p-value = 6.583e-13 menor de 0.05 podemos rechazar la hipótesis nula de igualdad de medias. Podemos concluir que existen diferencias entre la media de los valores del primer analisis respecto a los valores del segundo analisis despues de la modificacion del motor.*
+
+# Datos no parametricos
+
+En ocasiones nos encontramos con datos no paramétricos, los cuales no deben ser analizados con las pruebas estadísticas paramaetricas. Para estos casos es posible utilizar la versión no parametrica de **t.test()**
+
+### Mann-Whitney-Wilcoxon test
+
+Cuando nuestros datos no siguen una distribución normal es recomendable utilizar las pruebas no parametricas como la suma de rangos **U Mann-Whitney-Wilcoxon Signed Rank** que nos permiten  identificar si dos muestras son identicas o diferentes sin asumir que sigan una distribucion normal.
+
+```{r}
+str(ToothGrowth)
+```
+
+Comparacion no pareada
+```{r}
+VC <- ToothGrowth$len[ToothGrowth$supp == "VC"]
+OJ <- ToothGrowth$len[ToothGrowth$supp == "OJ"]
+shapiro.test(VC)
+shapiro.test(OJ)
+```
+
+
+```{r}
+wilcox.test(VC, OJ, alternative = "two.sided", paired = FALSE)
+```
+
+Comparacion pareada
+
+```{r}
+OJ_data <- subset(ToothGrowth, supp=="VC")
+
+OJ_1 <- OJ_data$len[OJ_data$dose == 1]
+OJ_2 <- OJ_data$len[OJ_data$dose == 2] 
+
+
+shapiro.test(OJ_1)
+shapiro.test(OJ_2)
+```
+
+
+```{r}
+wilcox.test(OJ_1, OJ_2, alternative = "two.sided", paired = TRUE)
+```
+
+
+**################################################################**
+
+# Visualización con ggplot2 (1h) 
+
+## ggplot2 
+
+En esta parte revisaremos la forma de crear gráficos con la librería de *ggplot*
+
+Es una herramienta flexible de R, implementada por Hadley Wickham, para producir gráficos. El *gg* en **ggplot2** significa **Grammar of Graphics**, un concepto gráfico basado en usar "gramática". La idea es que pueda construir cada gráfico a partir de unos pocos componentes iguales: unos datos, unas *geoms—marcas* visuales que representan los puntos. 
+
+De acuerdo con **ggplot2**, el gráfico puede ser dividido en diferentes partes: **Plot = data + Aesthetics + Geometry**.
+
+* data: es el data frame
+* Aesthetics: es usado para definir las variables *x* y *y*. nos permite controlar el color, el tamaño, la forma etc. 
+* Geometry: corresponde al tipo de gráfico (histograma, boxplot, line plot, density plot, etc)
+
+Librerías 
+```{r}
+# Instalación
+#install.packages("ggplot2")
+
+# Cargarlo
+library(ggplot2)
+```
+
+Hay dos principales funciones para crear graficos. 
+
+# qplot & ggplot
+
+### qplot
+
+Proporciona muchos valores por defecto. Crea un gráfico completo con los datos,  geom y mapeos. 
+Se usa para crear gráficos simples. 
+
+```{r}
+qplot(x = cty, y = hwy, color = cyl, data = mpg, geom = "point") #Crea un gráfico completo con los datos, geom y mapeos.
+```
+
+###  ggplot
+
+Sin valores por defecto y proporciona más control que **qplot()**.
+
+```{r}
+ggplot(data = mpg, aes(x = cty, y = hwy)) # Crea un gráfico para ir añadiendo capas.
+```
+
+Por ejemplo
+```{r}
+ggplot(mpg, aes(hwy, cty)) +
+  geom_point(aes(color = cyl)) +
+  geom_smooth(method ="lm") + 
+  coord_cartesian() + 
+  scale_color_gradient() +
+  theme_bw()
+```
+
+También podemos guardar nuestro gráfico como una variable y con la funcion **print()** podemos imprimirlo en pantalla. 
+```{r}
+aaa <- ggplot(mpg, aes(hwy, displ)) +
+  geom_point(aes(color = hwy)) +
+  geom_smooth(method ="lm") + 
+  coord_cartesian() + 
+  scale_color_gradient() +
+  theme_bw()
+```
+
+```{r}
+print(aaa)
+```
+
+Con la funcion **last_plot()** Podemos mandar a llamar al último plot que hemos creado o modificado con *ggplot()* .
+
+```{r}
+last_plot()
+```
+
+Con la funcion **ggsave()**, podemos guarda el último gráfico de 5’ x 5’ en un fichero con nombre "plot.png" en el directorio de trabajo. Ajusta el tipo de fichero a la extensión.
+
+```{r}
+ggsave("plot.png", width = 5, height = 5)
+```
+
+Ahora vamos a analizar la creacion de algunos gráficos. 
+
+# Scater plot 
+
+```{r}
+# Scatter plot básico
+ggplot(data = mpg, aes(x = displ, y = hwy)) + 
+  geom_point()
+```
+
+# Mapeos estéticos 
+
+```{r}
+# Cambiar el tamaño del punto y la forma
+
+ggplot(data = mpg) +
+ geom_point(mapping = aes(x = displ, y = hwy, color = class))
+
+ggplot(data = mpg) +
+ geom_point(mapping = aes(x = displ, y = hwy, size = class))
+
+ggplot(data = mpg) +
+ geom_point(mapping = aes(x = displ, y = hwy, alpha = class))
+
+ggplot(data = mpg) +
+ geom_point(mapping = aes(x = displ, y = hwy, shape = class))
+
+ggplot(data = mpg) +
+ geom_point(mapping = aes(x = displ, y = hwy), color = "red")
+```
+
+# Separación en facetas 
+```{r}
+ggplot(data = mpg) +
+ geom_point(mapping = aes(x = displ, y = hwy)) +
+ facet_wrap(~ class, nrow = 3)
+```
+
+
+# Objetos geométricos 
+
+```{r}
+ggplot(mpg, aes(x = displ)) + geom_density()
+
+ggplot(mpg, aes(x = displ)) + stat_density()
+
+ggplot(mpg, aes(x = displ)) + geom_histogram()
+
+ggplot(mpg, aes(x = displ)) + geom_bar()
+
+ggplot(mpg, aes(x = displ)) + geom_dotplot()
+```
+
+```{r}
+ggplot(data = mpg) +
+ geom_smooth(mapping = aes(x = displ, y = hwy, color = "red"))
+
+ggplot(data = mpg) +
+ geom_smooth(mapping = aes(x = displ, y = hwy, group = drv))
+
+ggplot(data = mpg) +
+ geom_smooth(mapping = aes(x = displ, y = hwy, linetype = drv))
+
+ggplot(data = mpg) +
+ geom_smooth(mapping = aes(x = displ, y = hwy, color = drv))
+```
+
+# Múltiples geoms
+
+```{r}
+ggplot(data = mpg) +
+ geom_smooth(mapping = aes(x = displ, y = hwy, color = drv)) +
+  geom_point(mapping = aes(x = displ, y = hwy, color = drv))
+```
+
+```{r}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+ geom_point(mapping = aes(color = class)) +
+ geom_smooth()
+
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+ geom_point(mapping = aes(color = class)) +
+ geom_smooth() +
+  geom_text(aes(label = rownames(mpg)))
+
+```
+
+
+# Boxplot
+
+
+```{r}
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_boxplot()
+  
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_boxplot() + coord_flip()
+
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_boxplot(notch = TRUE) 
+
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_boxplot(aes(color = class)) 
+
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_boxplot(aes(fill = class)) 
+```
+
+```{r}
+
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_violin() 
+
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_violin() +
+  geom_boxplot(width = 0.2)
+
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_violin(aes(fill = class)) 
+```
+
+```{r}
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_boxplot(aes(fill = class)) +
+  geom_dotplot(binaxis = "y", stackdir = "center") 
+
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_boxplot(aes(fill = class)) +
+  geom_jitter(position=position_jitter(0.2))
+
+```
+
+```{r}
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_violin(aes(fill = class)) +
+  geom_jitter(position=position_jitter(0.2))
+
+```
+
+
+
+
+
+
+
+
+
+
+
