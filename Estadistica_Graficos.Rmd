@@ -1,0 +1,318 @@
+---
+title: "Sesión_4_Estadistica_ContrasteH_Visualizacion_Datos"
+author: "Gabriel"
+date: "7/16/2019"
+output: html_document
+---
+
+# Estadística descriptiva (1h)
+
+## Cargar los datos 
+```{r}
+setwd("~/Desktop/R_Rstudio/R_courso_intersemestral_verano/")
+library(foreign)
+datos <- read.spss("Datos/GSS2018.sav", to.data.frame = TRUE, max.value.labels = 5) 
+```
+
+## Hacer un subset 
+```{r}
+datos_set <- subset(datos, select = c(ID, YEAR, AGE, SEX, EDUC, MARITAL, CHILDS, HRS2, HRS1, EARNRS, INCOME, PRES12))
+```
+
+# Explorar los datos 
+```{r}
+str(datos_set)
+dim(datos_set)
+length(datos_set)
+```
+
+```{r}
+min(datos_set$AGE, na.rm = TRUE) 
+max(datos_set$AGE, na.rm = TRUE) 
+mean(datos_set$AGE, na.rm = TRUE)
+median(datos_set$AGE, na.rm = TRUE)
+```
+
+## Moda
+```{r}
+moda_datos <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+```
+
+## Librerias para obtener Moda
+```{r}
+#install.packages("DescTools")
+#install.packages("pracma")
+#install.packages( 'prettyR', dependencies = T )
+library(DescTools)
+library(pracma)
+library( "prettyR" )
+```
+
+```{r}
+Mode(datos_set$AGE, na.rm = TRUE)
+moda_datos(datos_set$AGE)
+```
+
+```{r}
+range(datos_set$AGE, na.rm = TRUE) 
+quantile(datos_set$AGE, na.rm = TRUE)
+quantile(datos_set$AGE, 0.75, na.rm = TRUE) 
+IQR(datos_set$AGE, na.rm = TRUE)
+sort(datos_set$AGE) 
+table(datos_set$AGE)
+```
+
+## Medidas de dispersión 
+```{r}
+#install.packages("plotrix")
+library(plotrix)
+sd(datos_set$AGE, na.rm = TRUE)
+var(datos_set$AGE, na.rm = TRUE)
+std.error(datos_set$AGE, na.rm = TRUE) 
+```
+
+```{r}
+#install.packages("e1071")
+library(e1071) 
+kurtosis(datos_set$AGE, na.rm = TRUE)
+skewness(datos_set$AGE, na.rm = TRUE)
+```
+
+## summary 
+
+```{r}
+summary(datos_set) 
+```
+
+## describe 
+
+```{r}
+#install.packages("psych")
+library(psych)
+describe(datos_set)
+```
+
+## stat.desc
+
+```{r}
+#install.packages("pastecs")
+library(pastecs) 
+stat.desc(datos_set, p=0.99)
+stat.desc(datos_set[,c(3,5,11)], norm = TRUE)
+```
+
+## Graficos descriptivos: Boxplot, hist, stem, pairs, plot
+## Boxplot
+```{r}
+#boxplot(datos)
+boxplot(datos_set[,c(3,5,11)])
+boxplot(datos_set[,c(3,5,11)], horizontal = T)
+```
+
+## Histograma 
+```{r}
+hist(datos$AGE)
+hist(datos$AGE, breaks = 10)
+hist(datos$AGE, freq = FALSE)
+hist(datos$AGE, breaks = 10, freq = FALSE)
+```
+
+## Tallos y hojas 
+```{r}
+stem(datos$AGE)
+```
+
+## Pairs 
+```{r}
+pairs(datos_set[,c(3,7)])
+```
+
+## Plot
+```{r}
+plot(datos_set$AGE, datos_set$HRS1)
+```
+
+
+# Contraste de hipotesis (1h)
+
+Librerías
+
+```{r, eval=FALSE}
+install.packages("e1071")
+library(e1071)
+install.packages("car")
+library(car)
+```
+
+
+## Normalidad de nuestros datos
+
+```{r}
+qqnorm(datos_set$AGE[datos_set$SEX == "MALE"])
+qqline(datos_set$AGE[datos_set$SEX == "MALE"])
+
+qqnorm(datos_set$AGE[datos_set$SEX == "FEMALE"])
+qqline(datos_set$AGE[datos_set$SEX == "FEMALE"])
+```
+
+     
+```{r}
+shapiro.test(datos_set$AGE[datos_set$SEX == "MALE"])
+shapiro.test(datos_set$AGE[datos_set$SEX == "FEMALE"])
+```
+
+# t-test de muestras independientes 
+
+Uso del *t.test*
+
+```{r}
+t.test(datos_set$AGE[datos_set$SEX == "MALE"], mu = 50)
+t.test(datos_set$AGE[datos_set$SEX == "FEMALE"], mu = 50)
+```
+
+## Análisis de varianza
+
+```{r}
+var.test(datos_set$AGE[datos_set$SEX == "MALE"], datos_set$AGE[datos_set$SEX == "FEMALE"])
+```
+                                                                                                
+## t-test
+
+```{r}
+t.test(datos_set$AGE[datos_set$SEX == "MALE"], datos_set$AGE[datos_set$SEX == "FEMALE"], paired = FALSE, conf.level = 0.99)
+```
+
+`
+```{r}
+wilcox.test(datos_set$AGE[datos_set$SEX == "MALE"], datos_set$AGE[datos_set$SEX == "FEMALE"], paired = FALSE)
+```
+
+
+# Visualización con ggplot2 (1h) 
+
+Librerías 
+```{r}
+#install.packages("ggplot2")
+library(ggplot2)
+```
+
+Vamos a mostrar la distribución de los datos 
+
+```{r}
+# Vamos a crear un boxplot clásico
+ggplot(data = datos_set, mapping = aes(x = SEX, y = AGE, group = SEX)) +
+  geom_boxplot()
+
+# Adiciones color al contorno a cada grupo de datos asignados por la variable SEX
+ggplot(data = datos_set, mapping = aes(x = SEX, y = AGE, group = SEX)) +
+  geom_boxplot(aes(color = SEX)) 
+
+# Adiciones relleno con color  a cada grupo de datos asignados por la variable SEX
+ggplot(data = datos_set, mapping = aes(x = SEX, y = AGE, group = SEX)) +
+  geom_boxplot(aes(fill = SEX)) 
+
+# Adicionemos una nube de puntos a lo largo de la linea media para observar la distribución de los puntos
+ggplot(data = datos_set, mapping = aes(x = SEX, y = AGE, group = SEX)) +
+  geom_boxplot(aes(fill = SEX)) +
+  geom_jitter(position=position_jitter(0.1))
+
+```
+
+
+```{r}
+
+# Cambiemos el tamaño y la forma de los puntos, asi como el grosor del margen del boxplot asi como el ancho de la caja
+ggplot(data = datos_set, mapping = aes(x = SEX, y = AGE, group = SEX)) +
+  geom_boxplot(aes(fill = SEX), width=0.5, lwd = 1) +
+  geom_jitter(position=position_jitter(0.1), shape = 16, alpha = 1, size = 0.5) 
+
+# Adicionemos un theme clasico removiendo todos los elementos del fondo.
+ggplot(data = datos_set, mapping = aes(x = SEX, y = AGE, group = SEX)) +
+  geom_boxplot(aes(fill = SEX), width=0.5, lwd = 1) +
+  geom_jitter(position=position_jitter(0.1), shape = 16, alpha = 1, size = 0.5) +
+  theme_classic()
+
+# Adcionemos la un elemento que indique la media dentro de nuestro boxplot 
+ggplot(data = datos_set, mapping = aes(x = SEX, y = AGE, group = SEX)) +
+  geom_boxplot(aes(fill = SEX), width=0.5, lwd = 1) +
+  geom_jitter(position=position_jitter(0.1), shape = 16, alpha = 1, size = 0.5) +
+  theme_classic() +
+  stat_summary(fun.y = mean, geom = "point", position=position_dodge(width=0.9), shape=18, size=7)
+
+# Cambiemos la configuracion del eje X y Y 
+ggplot(data = datos_set, mapping = aes(x = SEX, y = AGE, group = SEX)) +
+  geom_boxplot(aes(fill = SEX), width=0.5, lwd = 1) +
+  geom_jitter(position=position_jitter(0.1), shape = 16, alpha = 1, size = 0.5) +
+  theme_classic() +
+  stat_summary(fun.y = mean, geom = "point", position=position_dodge(width=0.9), shape=18, size=7) +
+  scale_y_continuous(breaks = seq(10, 100, 10), limits=c(10, 100))
+```
+
+
+```{r}
+
+# Cambiemos el nombre del eje X y Y
+ggplot(data = datos_set, mapping = aes(x = SEX, y = AGE, group = SEX)) +
+  geom_boxplot(aes(fill = SEX), width=0.5, lwd = 1) +
+  geom_jitter(position=position_jitter(0.1), shape = 16, alpha = 1, size = 0.5) +
+  labs(x = "Sex", y = "Age of population", size = 30) + 
+  stat_summary(fun.y = mean, geom = "point", position=position_dodge(width=0.9), shape=18, size=7) +
+  scale_y_continuous(breaks = seq(10, 100, 10), limits=c(10, 100)) +
+  theme_classic()
+
+# Cambiemos la apariencia del nombre del eje X y Y
+ggplot(data = datos_set, mapping = aes(x = SEX, y = AGE, group = SEX)) +
+  geom_boxplot(aes(fill = SEX), width=0.5, lwd = 1) +
+  geom_jitter(position=position_jitter(0.1), shape = 16, alpha = 1, size = 0.5) +
+  labs(x = "Sex", y = "Age of population", size = 30) + 
+  stat_summary(fun.y = mean, geom = "point", position=position_dodge(width=0.9), shape=18, size=7) +
+  scale_y_continuous(breaks = seq(10, 100, 10), limits=c(10, 100)) +
+  theme_classic() + theme(axis.title.x = element_text(color="black", size=20, face="bold"),
+    axis.title.y = element_text(color="black", size=20, face="bold"))
+  
+# Agregemos la barra superior e inferior de los brazos del boxplot 
+ggplot(data = datos_set, mapping = aes(x = SEX, y = AGE, group = SEX)) +
+  geom_boxplot(aes(fill = SEX), width=0.5, lwd = 1) +
+  geom_jitter(position=position_jitter(0.1), shape = 16, alpha = 1, size = 0.5) +
+  labs(x = "Sex", y = "Age of population", size = 30) + 
+  stat_summary(fun.y = mean, geom = "point", position=position_dodge(width=0.9), shape=18, size=7) +
+  scale_y_continuous(breaks = seq(10, 100, 10), limits=c(10, 100)) +
+  theme_classic() + theme(axis.title.x = element_text(color="black", size=20, face="bold"),
+                          axis.title.y = element_text(color="black", size=20, face="bold")) +
+  stat_boxplot(geom ='errorbar', lwd = 1, width = 0.15)
+
+# Modifiquemos el grosor de las lineas de los ejes y la apariencia de la nomenclatura de cada eje 
+ggplot(data = datos_set, mapping = aes(x = SEX, y = AGE, group = SEX)) +
+  geom_boxplot(aes(fill = SEX), width=0.5, lwd = 1) +
+  geom_jitter(position=position_jitter(0.1), shape = 16, alpha = 1, size = 0.5) +
+  labs(x = "Sex", y = "Age of population", size = 30) + 
+  stat_summary(fun.y = mean, geom = "point", position=position_dodge(width=0.9), shape=18, size=7) +
+  scale_y_continuous(breaks = seq(10, 100, 10), limits=c(10, 100)) +
+  theme_classic() + theme(axis.title.x = element_text(color="black", size=20, face="bold"),
+                          axis.title.y = element_text(color="black", size=20, face="bold"),
+                          axis.ticks.length = unit(0.3,"cm"), 
+                          axis.ticks = element_line(size = 1),
+                          axis.line = element_line(size = 0.7, linetype = "solid"),
+                          axis.text = element_text (size = 15, face = "bold", colour = 'black'),
+                          plot.margin = margin(1, 1, 1, 1, "cm"), 
+                          legend.position= "none") +
+  stat_boxplot(geom ='errorbar', lwd = 1, width = 0.15)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
